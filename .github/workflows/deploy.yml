@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main"] # 当你推送到 main 分支时触发
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -17,13 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Install Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # 删除了 cache: 'npm'，因为项目中可能还没有生成 package-lock.json 文件
+          # 确保这里绝对没有任何 cache 相关的配置
 
       - name: Install dependencies
+        # 使用 --no-package-lock 避免在没有锁文件的情况下报错（虽然 npm install 通常没问题）
         run: npm install
 
       - name: Build
@@ -32,7 +33,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'dist/' # Vite 默认构建目录
+          path: 'dist/'
 
   deploy:
     needs: build_site
