@@ -8,9 +8,9 @@ import { calculateSummary } from './utils/settlement';
 
 const App: React.FC = () => {
   const [participants, setParticipants] = useState<Participant[]>([
-    { id: '1', name: 'A', spent: 120 },
-    { id: '2', name: 'B', spent: 70 },
-    { id: '3', name: 'C', spent: 0 },
+    { id: '1', name: '小明', spent: 120 },
+    { id: '2', name: '小红', spent: 70 },
+    { id: '3', name: '小强', spent: 0 },
   ]);
 
   const reportRef = useRef<HTMLDivElement>(null);
@@ -35,17 +35,17 @@ const App: React.FC = () => {
     try {
       const dataUrl = await htmlToImage.toPng(reportRef.current, { backgroundColor: '#f8fafc' });
       const link = document.createElement('a');
-      link.download = 'fairshare-settlement.png';
+      link.download = '结算方案报告.png';
       link.href = dataUrl;
       link.click();
     } catch (err) {
-      console.error('Failed to export image', err);
+      console.error('导出图片失败', err);
     }
   };
 
   const chartData = useMemo(() => {
     return participants.map(p => ({
-      name: p.name || 'Anonymous',
+      name: p.name || '匿名',
       spent: p.spent,
       diff: p.spent - summary.average
     }));
@@ -60,14 +60,14 @@ const App: React.FC = () => {
             <div className="bg-indigo-600 p-2 rounded-lg">
               <Calculator className="text-white w-5 h-5" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-800">FairShare</h1>
+            <h1 className="text-xl font-bold tracking-tight text-slate-800">分账大师</h1>
           </div>
           <button 
             onClick={handleExportImage}
             className="flex items-center gap-2 bg-indigo-50 text-indigo-600 px-4 py-2 rounded-full font-medium hover:bg-indigo-100 transition-colors text-sm"
           >
             <Download className="w-4 h-4" />
-            Save as Image
+            保存为图片
           </button>
         </div>
       </header>
@@ -80,14 +80,14 @@ const App: React.FC = () => {
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <h2 className="font-semibold text-slate-700 flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-indigo-500" />
-                Expenses
+                账单支出明细
               </h2>
               <button 
                 onClick={handleAddParticipant}
                 className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Add Person
+                添加成员
               </button>
             </div>
             
@@ -95,19 +95,19 @@ const App: React.FC = () => {
               {participants.map((p) => (
                 <div key={p.id} className="flex gap-3 items-end group">
                   <div className="flex-1 space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Name</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">姓名</label>
                     <input 
                       type="text"
                       value={p.name}
                       onChange={(e) => handleUpdateParticipant(p.id, 'name', e.target.value)}
-                      placeholder="e.g. Alice"
+                      placeholder="例如：张三"
                       className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
                     />
                   </div>
                   <div className="w-32 space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Spent</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">花费</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">¥</span>
                       <input 
                         type="number"
                         value={p.spent || ''}
@@ -128,8 +128,8 @@ const App: React.FC = () => {
 
               {participants.length === 0 && (
                 <div className="text-center py-8 text-slate-400 space-y-2">
-                  <p className="text-sm">No participants yet.</p>
-                  <button onClick={handleAddParticipant} className="text-indigo-600 text-sm font-medium hover:underline">Add someone to start</button>
+                  <p className="text-sm">暂无成员。</p>
+                  <button onClick={handleAddParticipant} className="text-indigo-600 text-sm font-medium hover:underline">点击添加新成员</button>
                 </div>
               )}
             </div>
@@ -137,17 +137,17 @@ const App: React.FC = () => {
 
           <div className="bg-indigo-600 rounded-2xl p-6 text-white shadow-lg shadow-indigo-200">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-indigo-100 text-sm font-medium">Global Summary</span>
+              <span className="text-indigo-100 text-sm font-medium">全局概览</span>
               <RefreshCw className="w-4 h-4 text-indigo-200" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-2xl font-bold">${summary.total.toFixed(2)}</div>
-                <div className="text-indigo-200 text-xs uppercase tracking-wide mt-1">Total Spent</div>
+                <div className="text-2xl font-bold">¥{summary.total.toFixed(2)}</div>
+                <div className="text-indigo-200 text-xs uppercase tracking-wide mt-1">总支出</div>
               </div>
               <div>
-                <div className="text-2xl font-bold">${summary.average.toFixed(2)}</div>
-                <div className="text-indigo-200 text-xs uppercase tracking-wide mt-1">Per Person</div>
+                <div className="text-2xl font-bold">¥{summary.average.toFixed(2)}</div>
+                <div className="text-indigo-200 text-xs uppercase tracking-wide mt-1">人均消费</div>
               </div>
             </div>
           </div>
@@ -155,14 +155,14 @@ const App: React.FC = () => {
 
         {/* Results Section */}
         <section className="lg:col-span-7" ref={reportRef}>
-          <div className="space-y-8 p-1"> {/* Padding for screenshot quality */}
+          <div className="space-y-8 p-1"> 
             
             {/* Settlement Instructions */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
               <div className="p-6 border-b border-slate-100">
                 <h2 className="font-semibold text-slate-700 flex items-center gap-2">
                   <Receipt className="w-4 h-4 text-indigo-500" />
-                  How to Settle
+                  结算方案
                 </h2>
               </div>
               <div className="p-6">
@@ -171,24 +171,24 @@ const App: React.FC = () => {
                     {summary.settlements.map((s, idx) => (
                       <div key={idx} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
                         <div className="flex items-center gap-3">
-                          <span className="font-semibold text-slate-700">{s.from || 'Someone'}</span>
+                          <span className="font-semibold text-slate-700">{s.from || '某人'}</span>
                           <div className="flex flex-col items-center">
-                            <span className="text-[10px] font-bold text-indigo-500 uppercase">pays</span>
+                            <span className="text-[10px] font-bold text-indigo-500 uppercase">支付给</span>
                             <div className="h-px w-12 bg-slate-300 relative my-1">
                               <div className="absolute right-0 top-1/2 -translate-y-1/2 border-y-4 border-y-transparent border-l-4 border-l-slate-300"></div>
                             </div>
                           </div>
-                          <span className="font-semibold text-slate-700">{s.to || 'Someone'}</span>
+                          <span className="font-semibold text-slate-700">{s.to || '某人'}</span>
                         </div>
                         <div className="text-lg font-bold text-indigo-600">
-                          ${s.amount.toFixed(2)}
+                          ¥{s.amount.toFixed(2)}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-6 text-slate-400 italic text-sm">
-                    Everything is balanced! No settlements needed.
+                    账目已平，无需结算！
                   </div>
                 )}
               </div>
@@ -199,7 +199,7 @@ const App: React.FC = () => {
               <div className="p-6 border-b border-slate-100">
                 <h2 className="font-semibold text-slate-700 flex items-center gap-2">
                   <PieChartIcon className="w-4 h-4 text-indigo-500" />
-                  Spending Analysis
+                  消费分析图表
                 </h2>
               </div>
               <div className="p-6">
@@ -216,9 +216,9 @@ const App: React.FC = () => {
                             return (
                               <div className="bg-white shadow-xl border border-slate-100 p-3 rounded-lg text-sm">
                                 <p className="font-bold text-slate-700">{payload[0].payload.name}</p>
-                                <p className="text-slate-500">Spent: ${payload[0].value}</p>
+                                <p className="text-slate-500">已付: ¥{payload[0].value}</p>
                                 <p className={payload[0].payload.diff >= 0 ? 'text-emerald-600 font-medium' : 'text-rose-500 font-medium'}>
-                                  {payload[0].payload.diff >= 0 ? 'Over' : 'Under'} avg by ${Math.abs(payload[0].payload.diff).toFixed(2)}
+                                  {payload[0].payload.diff >= 0 ? '高于' : '低于'}平均值 ¥{Math.abs(payload[0].payload.diff).toFixed(2)}
                                 </p>
                               </div>
                             );
@@ -226,7 +226,7 @@ const App: React.FC = () => {
                           return null;
                         }}
                       />
-                      <ReferenceLine y={summary.average} stroke="#6366f1" strokeDasharray="5 5" label={{ value: 'Avg', position: 'right', fill: '#6366f1', fontSize: 10, fontWeight: 'bold' }} />
+                      <ReferenceLine y={summary.average} stroke="#6366f1" strokeDasharray="5 5" label={{ value: '平均线', position: 'right', fill: '#6366f1', fontSize: 10, fontWeight: 'bold' }} />
                       <Bar dataKey="spent" radius={[6, 6, 0, 0]} barSize={40}>
                         {chartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.spent >= summary.average ? '#6366f1' : '#cbd5e1'} />
@@ -244,7 +244,7 @@ const App: React.FC = () => {
                         <span className="text-sm font-medium text-slate-600">{item.name}</span>
                       </div>
                       <span className={`text-xs font-bold ${item.diff >= 0 ? 'text-indigo-600' : 'text-slate-500'}`}>
-                        {item.diff >= 0 ? '+' : '-'}${Math.abs(item.diff).toFixed(2)}
+                        {item.diff >= 0 ? '多付' : '少付'} ¥{Math.abs(item.diff).toFixed(2)}
                       </span>
                     </div>
                   ))}
@@ -254,7 +254,7 @@ const App: React.FC = () => {
 
             {/* Footer Branding for Image */}
             <div className="text-center text-slate-400 text-[10px] py-4 uppercase tracking-[0.2em]">
-              Generated by FairShare &bull; split your bills with ease
+              由 分账大师 生成 &bull; 轻松结算每一分
             </div>
 
           </div>
